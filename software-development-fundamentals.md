@@ -18,7 +18,7 @@ mathematical foundations, programming paradigms, languages and data structures. 
 I have already read each of the following books and found them valuable.
 The same applies to the conferences.
 
-In my option software development fundamentals are in many cloud projects, thus I published this list.
+In my opinion software development fundamentals are missing in many cloud projects, thus I published this list.
 Read more on [Necessary basic knowledge is missing in many cloud projects](/2018/10/25/necessary-basic-knowledge-is-missing-in-many-cloud-projects/).
 
 ## Recommended Conferences
