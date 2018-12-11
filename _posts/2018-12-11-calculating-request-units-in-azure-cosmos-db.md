@@ -12,7 +12,7 @@ RU/s is a rate-based currency, which abstracts the system resources such as CPU,
 Azure Cosmos DB requires that specific RU/s are provisioned.  
 These ensure that sufficient system resources are available for your Azure Cosmos database all the time to meet or exceed the Azure Cosmos DB SLA. It is possible to provision throughput at two distinct granularities: the whole database or individual containers.
 
-Multiple of my customers have asked in the last weeks why the [official documentation](https://docs.microsoft.com/en-us/azure/cosmos-db/request-units) around RUs has changed and there are no longer samples or calculations in it.
+In the last weeks multiple of my customers have asked why the [official documentation](https://docs.microsoft.com/en-us/azure/cosmos-db/request-units) around RUs has changed and there are no longer samples or calculations in it.
 
 I would personally just summarize it like this:
 > **Reality is the only thing that’s real!**
@@ -21,7 +21,7 @@ I would personally just summarize it like this:
 
 ## Don't Calculate or Estimate - Measure!
 
-Inside the [Request units in Azure Cosmos DB](https://docs.microsoft.com/en-us/azure/cosmos-db/request-units) you can finde the main considerations for the things which have impact on the consumed RUs. Let's summarize:
+Inside the [Request units in Azure Cosmos DB documentation](https://docs.microsoft.com/en-us/azure/cosmos-db/request-units) you can find the main considerations for the things which have impact on the consumed RUs. Let's summarize:
 
 Item size
   : Larger size > More RUs consumed
@@ -51,7 +51,7 @@ Don't calculate or estimate - measure!
 
 ## The Azure Cosmos DB Request Units Tester
 
-And for making it easier to measure different document types, document layouts, queries with different consistency levels and indexing policies I have implemented a little sample application to automate it.
+And for making it easier to measure different document types, document layouts and queries with different consistency levels and indexing policies I have implemented a little sample application to automate it.
 
 You can find the [Azure Cosmos DB Request Units Tester](https://github.com/RicardoNiepel/AzureCosmosDB-RequestUnitsTester) sources and more documentation on GitHub - any feedback is welcome!
 
@@ -65,7 +65,7 @@ The console application tests all combinations of
 - the defined Indexing Policies
 - the defined Documents & Queries
 
-For each document and the possible operation the following is tracked:
+For each document and the possible operations the following is tracked:
 
 - original document size
 - document size inside CosmosDB (with metadata, without formatting)
@@ -79,7 +79,55 @@ For each query the following is tracked:
 
 After that it generates a 'results.csv' with all the results.
 
-## Same Examples
+## Request Units Charge
+
+As you can see above one of the main measurements are the request units charge, but where does it come from?  
+From Azure Cosmos DB.
+
+Independently if you are using our .NET Cosmos DB SDK with the DocumentClient class, or using existing MongoDB SDKs or just leveraging the Azure Cosmos DB REST API directly - all of them provide the opportunity to receive the consumed Request Units:
+
+### .NET Cosmos DB SDK with DocumentClient class
+
+```cs
+// https://docs.microsoft.com/en-us/azure/cosmos-db/performance-tips#throughput
+var client = new DocumentClient(new Uri(accountEndpoint), accountKey);
+
+ResourceResponse<Document> response = await client.CreateDocumentAsync(collectionSelfLink, myDocument);
+
+var requestCharge = response.RequestCharge;
+```
+
+### MongoDB API & SDK
+
+```cs
+var mongoClient = new MongoClient(settings);
+var database = mongoClient.GetDatabase(dbName);
+var collection = database.GetCollection<BsonDocument>(collectionName);
+
+collection.InsertOne(document);
+var ru = database.RunCommand(new JsonCommand<BsonDocument>("{getLastRequestStatistics: 1}"));
+
+var requestCharge = ru["RequestCharge"];
+```
+
+### Azure Cosmos DB REST API
+
+```
+// https://docs.microsoft.com/en-us/rest/api/cosmos-db/common-cosmosdb-rest-response-headers
+
+HTTP/1.1 201 Created  
+Content-Type: application/json  
+x-ms-request-charge: 4.95  
+...  
+
+{  
+    "id": "MyDb",  
+    "_rid": "UoEi5w==",  
+    [...] 
+}  
+```
+
+## Some Examples
 
 The [Azure Cosmos DB Request Units Tester](https://github.com/RicardoNiepel/AzureCosmosDB-RequestUnitsTester) comes already with some samples to show how it can be used and how important it is, to get real numbers with real scenarios.
 
