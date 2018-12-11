@@ -175,7 +175,7 @@ For our biggest and high potential customers, we as CSAs are - in each of our te
 
 ## Feedback
 
-Please give me your feedbacka and share your progress.
+Please give me your feedback and share your progress.
 
 * [@RicardoNiepel](https://twitter.com/RicardoNiepel)
 * [#C4PlantUML](https://twitter.com/hashtag/C4PlantUML?src=hash)
